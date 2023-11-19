@@ -10,7 +10,7 @@
 services:
   server:
     build:
-      context: /server
+      context: ./server
     environment:
       NODE_ENV: production
       POSTGRES_HOST: db
@@ -29,21 +29,21 @@ services:
       - db-password
     volumes:
       - ./server:/api
-      - /server/node_modules
+      - ./server/node_modules
     depends_on:
       db:
         condition: service_healthy
 
   client:
     build:
-      context: /client
+      context: ./client
     environment:
       NODE_ENV: production
     ports:
       - 3000:3000
     volumes:
       - ./client:/app
-      - /client/node_modules
+      - ./client/node_modules
     depends_on:
       server:
         condition: service_healthy
@@ -82,4 +82,4 @@ volumes:
   db-data:
 secrets:
   db-password:
-    file: db/password.txt
+    file: ./db/password.txt
