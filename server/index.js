@@ -8,10 +8,11 @@ app.use(cors());
 app.use(express.json());
 
 // Routes //
-app.get("/", (req,res) => {
+app.get("/", (req, res) => {
 	res.send({
-		"Get all todos":"http://localhost:5000/todos",
-		"Get particular todo":"http://localhost:5000/todos/1"});
+		"Get all todos": "http://localhost:5000/todos",
+		"Get particular todo": "http://localhost:5000/todos/1"
+	});
 	//log("You can use following url to get the data");
 });
 // Create
@@ -33,13 +34,14 @@ app.post("/todos", async (req, res) => {
 // Read all
 app.get("/todos", async (req, res) => {
 	try {
-		const strQuery = "SELECT * FROM todo";
+		const strQuery = "select * from todo";
 		const allTodos = await pool.query(strQuery);
 
-		res.json(allTodos.rows);
+		res.status(200).json(allTodos.rows);
 		// console.log(req.body);
 		// res.send("Welcome, " + req.body.desc);
 	} catch (err) {
+		res.status(500).json({ error: err.message });
 		console.error(err.message);
 	}
 });
@@ -48,7 +50,7 @@ app.get("/todos", async (req, res) => {
 app.get("/todos/:id", async (req, res) => {
 	try {
 		const { id } = req.params;
-		const strQuery = "SELECT * FROM todo WHERE todo_id = " + id;
+		const strQuery = "SELECT * FROM todo WHERE id = " + id;
 		const todo = await pool.query(strQuery);
 
 		res.json(todo.rows[0]);
@@ -65,9 +67,9 @@ app.put("/todos/:id", async (req, res) => {
 		const { id } = req.params;
 		const { desc } = req.body;
 
-		//const strQuery = "UPDATE todo SET description =$1 WHERE todo_id = $2";
+		//const strQuery = "UPDATE todo SET description =$1 WHERE id = $2";
 		const updateTodo = await pool.query(
-			"UPDATE todo SET description =$1 WHERE todo_id = $2 RETURNING *",
+			"UPDATE todo SET description =$1 WHERE id = $2 RETURNING *",
 			[desc, id]
 		);
 
@@ -85,7 +87,7 @@ app.delete("/todos/:id", async (req, res) => {
 		const { id } = req.params;
 
 		const deleteTodo = await pool.query(
-			"DELETE FROM todo WHERE todo_id = $1 RETURNING *",
+			"DELETE FROM todo WHERE id = $1 RETURNING *",
 			[id]
 		);
 
@@ -97,6 +99,29 @@ app.delete("/todos/:id", async (req, res) => {
 	}
 });
 
+app.get("/health", (req, res) => {
+	try {
+		//check for db connection
+		pool.query("SELECT NOW()", (err, res) => {
+			if (err) {
+				console.error(err.message);
+				res.status(500).json({ error: err.message });
+			} else {
+				console.log("DB connected");
+			}
+		});
+
+		//specify health check for options
+
+		res.status(200).json({ message: "Server is up and running" });
+
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).json({ error: err.message });
+	}
+
+});
+
 app.listen(5000, () => {
 	console.log("Server has started on port 5000");
-});
+}); 
