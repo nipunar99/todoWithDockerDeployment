@@ -7,8 +7,8 @@ RUN npm install -g nodemon
 WORKDIR /api
 
 #copying package.json and package-lock.json
-COPY package.json .
-COPY package-lock.json .
+COPY ./package.json .
+COPY ./package-lock.json .
 
 #installing dependencies
 RUN npm ci
