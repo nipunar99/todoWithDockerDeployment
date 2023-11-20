@@ -9,8 +9,8 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
-    build:
-      context: /server
+    build: ./server
+    container_name: server_c
     environment:
       NODE_ENV: production
       POSTGRES_HOST: db
@@ -35,8 +35,8 @@ services:
         condition: service_healthy
 
   client:
-    build:
-      context: ./client
+    build: ./client
+    container_name: client_c
     environment:
       NODE_ENV: production
     ports:
