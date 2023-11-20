@@ -4,8 +4,8 @@ FROM node:20.9.0-alpine
 WORKDIR /app
 
 #copying package.json and package-lock.json
-COPY ./package.json /app
-COPY ./package-lock.json /app
+COPY package.json /app
+COPY package-lock.json /app
 
 #installing dependencies
 RUN npm ci
